@@ -44,7 +44,7 @@ for (area_ in areas)
 
   Z <- qnorm(1-(alpha/2))
 
-  error <- 3
+  error <- 5
 
   n <- ceiling ((sd*Z/error)^2)
 
