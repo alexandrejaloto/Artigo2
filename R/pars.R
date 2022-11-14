@@ -25,14 +25,32 @@ for (area in areas)
 
     for(application in 1:2)
     {
+      if(year == 2009)
+        {
+        # filter items of each area
+        items_area <- subset(items, SG_AREA = area) %>%
+          # filter first testlet
+          subset(CO_PROVA == testlets[[paste0('year.', year, '.', application)]][[area]][1]) %>%
+          # select parameters and content
+          select(starts_with('NU_PAR'), CO_HABILIDADE) %>%
+          # exclude items without parameters
+          drop_na()
+
+        if(nrow(items_area) > 0)
+      items_area$TP_LINGUA <- NA
+
+      } else {
+
       # filter items of each area
       items_area <- subset(items, SG_AREA = area) %>%
         # filter first testlet
         subset(CO_PROVA == testlets[[paste0('year.', year, '.', application)]][[area]][1]) %>%
         # select parameters and content
-        select(starts_with('NU_PAR'), CO_HABILIDADE) %>%
+        select(starts_with('NU_PAR'), CO_HABILIDADE, TP_LINGUA) %>%
         # exclude items without parameters
-        drop_na()
+        drop_na(starts_with('NU_PAR'), CO_HABILIDADE)
+
+      }
 
       if(nrow(items_area) > 0)
       {
@@ -53,9 +71,9 @@ for (area in areas)
           # filter first testlet
           subset(CO_PROVA == testlets[[paste0('year.', year, '.', application)]][[area]][1]) %>%
           # select parameters and content
-          select(starts_with('NU_PAR'), CO_HABILIDADE) %>%
+          select(starts_with('NU_PAR'), CO_HABILIDADE, TP_LINGUA) %>%
           # exclude items without parameters
-          drop_na()
+          drop_na(starts_with('NU_PAR'), CO_HABILIDADE)
 
         items_area$area <- area
         items_area$year <- year
@@ -73,3 +91,31 @@ for (area in areas)
 table(pars$area)
 
 save(pars, file = 'rdata/pars.RData')
+
+# description ----
+
+library (dplyr)
+
+load('rdata/pars.RData')
+
+pars
+
+areas <- c('CH', 'CN', 'LC', 'MT')
+
+subset (pars, year != 2011) %>%
+  group_by(area) %>%
+  summarise(
+    mean.a = mean(NU_PARAM_A),
+    mean.b = mean(NU_PARAM_B),
+    mean.c = mean(NU_PARAM_C),
+    sd.a = sd(NU_PARAM_A),
+    sd.b = sd(NU_PARAM_B),
+    sd.c = sd(NU_PARAM_C),
+    n = n()
+  ) %>%
+  write.table(
+    'results/pars.csv',
+    row.names = FALSE,
+    sep = ';',
+    dec = ','
+  )

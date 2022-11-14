@@ -8,6 +8,7 @@ data <- fread (
   'D:/Microdados/2020/MICRODADOS_ENEM_2020.csv',
   # nrow = 30000,
   select = c(
+    'TP_LINGUA',
     paste0(
       'NU_NOTA_',
       rep (c('CH', 'CN', 'LC', 'MT')
@@ -29,7 +30,7 @@ for (area_ in areas)
 
 
 # draw simple random sample from Enem 2020
-# sample error = 30
+# sample error = 5
 alpha <- .05
 real <- list()
 
@@ -48,9 +49,16 @@ for (area_ in areas)
 
   n <- ceiling ((sd*Z/error)^2)
 
-  set.seed(1000)
+  set.seed(1)
   real[[area_]] <- sample(scores[[area_]]$scores, n)
 
+  if(area_ == 'LC')
+  {
+    set.seed(1)
+    language <- subset(data, NU_NOTA_LC > 0) %>%
+      pull(TP_LINGUA) %>%
+      sample(n)
+  }
 }
 
 lapply (real, length)
@@ -71,4 +79,7 @@ lapply (real, summary)
 lapply (scores, summary)
 
 save(real, file = 'rdata/samples.RData')
+save(language, file = 'rdata/language.RData')
 
+m.scores <- lapply(scores, function(x) mean(pull(select(x, scores))))
+save(m.scores, file = 'rdata/mean.RData')

@@ -1,11 +1,22 @@
-fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, stop)
+# sel.method = 'random'
+# cat.type = 'fixed'
+# acceleration = 1
+# threshold = 45
+# rmax = 1
+# stop = list(fixed = 45)
+# n = 0
+# condition = 'ALETF45'
+
+fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, stop, n, condition)
 {
+
   for (area_ in areas)
   {
 
+    # area_ <- 'CH'
     load(paste0('rdata/resps_', area_, '.RData'))
 
-    start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
+    start.theta <- (m.scores[[area_]] - official.constants[[area_]]$m)/official.constants[[area_]]$s
 
     items <- subset (pars, area == area_)
 
@@ -13,9 +24,11 @@ fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, 
 
     for (rep in 1:replications)
     {
+      # rep <- 1
+
       print(paste0(area_, rep))
 
-      set.seed(rep, sample.kind = "Rounding")
+      set.seed(rep+n, sample.kind = "Rounding")
 
       results[[rep]] <- simCAT::simCAT(
         resps = resps[[rep]],
@@ -33,7 +46,8 @@ fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, 
         stop = stop
       )
     }
-    save(results, file = paste0('results/ALETF452_', area_, '.RData'))
+
+    save(results, file = paste0('results/', condition, '_', area_, '.RData'))
 
   }
 }

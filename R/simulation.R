@@ -11,13 +11,13 @@ rm(list = ls())
 load('rdata/pars.RData')
 pars <- subset (pars, year != 2011)
 
-# load thetas (samples)
-load('rdata/samples.RData')
+# load Enem mean
+load('rdata/mean.RData')
 
 # load constants
 load('rdata/official_constants.RData')
 
-areas <- c('CH', 'CN', 'LC', 'MT')
+# areas <- c('CH', 'CN', 'LC', 'MT')
 areas <- c('CH', 'CN', 'MT')
 # areas <- c('CN', 'MT')
 # areas <- c('CH')
@@ -29,93 +29,29 @@ source('R/fct_simulation.R')
 
 # selection: random; fixed length (45) ----
 
-for (area_ in areas)
-{
-
-  load(paste0('rdata/resps_', area_, '.RData'))
-
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-    print(paste0(area_, rep))
-
-    set.seed(rep, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'random',
-      cat.type = 'fixed',
-      acceleration = 1,
-      threshold = 45,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(fixed = 45)
-    )
-  }
-  save(results, file = paste0('results/ALETF452_', area_, '.RData'))
-
-}
-
-
-
-# selection: random; fixed length (20) ----
-# area_ <- 'MT'
-
 fct_simulation(
   sel.method = 'random',
   cat.type = 'fixed',
   acceleration = 1,
   threshold = 45,
   rmax = 1,
-  stop = list(fixed = 45)
+  stop = list(fixed = 45),
+  n = 0,
+  condition = 'ALETF45'
 )
 
-for (area_ in areas)
-{
-  load(paste0('rdata/resps_', area_, '.RData'))
+# selection: random; fixed length (20) ----
 
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-# rep <- 1
-    print(paste0(area_, rep))
-
-    set.seed(rep+400, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'random',
-      cat.type = 'fixed',
-      acceleration = 1,
-      threshold = 20,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(fixed = 20)
-    )
-  }
-
-  save(results, file = paste0('results/ALETF20_', area_, '.RData'))
-}
+fct_simulation(
+  sel.method = 'random',
+  cat.type = 'fixed',
+  acceleration = 1,
+  threshold = 20,
+  rmax = 1,
+  stop = list(fixed = 20),
+  n = 400,
+  condition = 'ALETF20'
+)
 
 # selection: random; standard error (0.3) ----
 
@@ -125,279 +61,283 @@ fct_simulation(
   acceleration = 1,
   threshold = .3,
   rmax = 1,
-  stop = list(se = .3, min.items = 15, max.items = 60)
+  stop = list(se = .3, min.items = 15, max.items = 60),
+  n = 800,
+  condition = 'ALEEP30'
 )
-
-for (area_ in areas)
-{
-  load(paste0('rdata/resps_', area_, '.RData'))
-
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-
-    print(paste0(area_, rep))
-
-    set.seed(rep+800, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'random',
-      cat.type = 'variable',
-      acceleration = 1,
-      threshold = .3,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(se = .3, min.items = 15, max.items = 60)
-    )
-  }
-
-  save(results, file = paste0('results/ALEEP30_', area_, '.RData'))
-}
 
 # selection: random; standard error (.3)/error reduction (.015) ----
 
-for (area_ in areas)
-{
-  load(paste0('rdata/resps_', area_, '.RData'))
-
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-    print(paste0(area_, rep))
-
-    set.seed(rep+1200, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'random',
-      cat.type = 'variable',
-      acceleration = 1,
-      threshold = .3,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf)
-    )
-  }
-
-  save(results, file = paste0('results/ALEEP30RE015_', area_, '.RData'))
-}
+fct_simulation(
+  sel.method = 'random',
+  cat.type = 'variable',
+  acceleration = 1,
+  threshold = .3,
+  rmax = 1,
+  stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf),
+  n = 1200,
+  condition = 'ALEEP30RE015'
+)
 
 # selection: MFI; fixed length (45) ----
 
-for (area_ in areas)
-{
-  # area_ <- 'CH'
-  load(paste0('rdata/resps_', area_, '.RData'))
-
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-
-    print(paste0(area_, rep))
-
-    set.seed(rep+1600, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'MFI',
-      cat.type = 'fixed',
-      acceleration = 1,
-      threshold = 45,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(fixed = 45)
-    )
-  }
-  save(results, file = paste0('results/MIFTF45_', area_, '.RData'))
-
-}
-
-
+fct_simulation(
+  sel.method = 'MFI',
+  cat.type = 'fixed',
+  acceleration = 1,
+  threshold = 45,
+  rmax = 1,
+  stop = list(fixed = 45),
+  n = 1600,
+  condition = 'MIFTF45'
+)
 
 # selection: MFI; fixed length (20) ----
 
-for (area_ in areas)
-{
-  load(paste0('rdata/resps_', area_, '.RData'))
-
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-
-    print(paste0(area_, rep))
-
-    set.seed(rep+2000, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'MFI',
-      cat.type = 'fixed',
-      acceleration = 1,
-      threshold = 20,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(fixed = 20)
-    )
-  }
-
-  save(results, file = paste0('results/MIFTF20_', area_, '.RData'))
-}
+fct_simulation(
+  sel.method = 'MFI',
+  cat.type = 'fixed',
+  acceleration = 1,
+  threshold = 20,
+  rmax = 1,
+  stop = list(fixed = 20),
+  n = 2000,
+  condition = 'MIFTF20'
+)
 
 # selection: MFI; standard error (0.3) ----
 
-for (area_ in areas)
-{
-  load(paste0('rdata/resps_', area_, '.RData'))
-
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-    print(paste0(area_, rep))
-
-    set.seed(rep+2400, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'MFI',
-      cat.type = 'variable',
-      acceleration = 1,
-      threshold = .3,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(se = .3, min.items = 15, max.items = 60)
-    )
-  }
-
-  save(results, file = paste0('results/MIFEP30_', area_, '.RData'))
-}
+fct_simulation(
+  sel.method = 'MFI',
+  cat.type = 'variable',
+  acceleration = 1,
+  threshold = .3,
+  rmax = 1,
+  stop = list(se = .3, min.items = 15, max.items = 60),
+  n = 2400,
+  condition = 'MIFEP30'
+)
 
 # selection: MFI; standard error (.3)/error reduction (.015) ----
 
-for (area_ in areas)
-{
-  load(paste0('rdata/resps_', area_, '.RData'))
-
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
-
-  items <- subset (pars, area == area_)
-
-  results <- list()
-
-  for (rep in 1:replications)
-  {
-    print(paste0(area_, rep))
-
-    set.seed(rep+2800, sample.kind = "Rounding")
-
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'MFI',
-      cat.type = 'variable',
-      acceleration = 1,
-      threshold = .3,
-      rmax = 1,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf)
-    )
-  }
-
-  save(results, file = paste0('results/MIFEP30RE015_', area_, '.RData'))
-}
+fct_simulation(
+  sel.method = 'MFI',
+  cat.type = 'variable',
+  acceleration = 1,
+  threshold = .3,
+  rmax = 1,
+  stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf),
+  n = 2800,
+  condition = 'MIFEP30RE015'
+)
 
 # selection: PR (acceleration parameter = -1); fixed length (45) ----
 
-for (area_ in areas)
-{
-  # area_ <- 'CH'
-  load(paste0('rdata/resps_', area_, '.RData'))
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = -1,
+  threshold = 45,
+  rmax = .3,
+  stop = list(fixed = 45),
+  n = 3200,
+  condition = 'PR-1TF45'
+)
 
-  start.theta <- (mean(real[[area_]]) - official.constants[[area_]]$m)/official.constants[[area_]]$s
+# selection: PR (acceleration parameter = -1); fixed length (20) ----
 
-  items <- subset (pars, area == area_)
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = -1,
+  threshold = 20,
+  rmax = .3,
+  stop = list(fixed = 20),
+  n = 3600,
+  condition = 'PR-1TF20'
+)
 
-  results <- list()
+# selection: PR (acceleration parameter = -1); standard error (0.3) ----
 
-  for (rep in 1:replications)
-  {
-    print(paste0(area_, rep))
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = -1,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60),
+  n = 4000,
+  condition = 'PR-1EP30'
+)
 
-    set.seed(rep+3200, sample.kind = "Rounding")
+# selection: PR (acceleration parameter = -1); standard error (.3)/error reduction (.015) ----
 
-    results[[rep]] <- simCAT::simCAT(
-      resps = resps[[rep]],
-      bank = items[,1:3],
-      start.theta = start.theta,
-      sel.method = 'progressive',
-      cat.type = 'fixed',
-      acceleration = -1,
-      threshold = 45,
-      rmax = .3,
-      content.names = 1:30,
-      content.props = rep(1/30, 30),
-      content.items = items$CO_HABILIDADE,
-      met.content = "MCCAT",
-      stop = list(fixed = 45)
-    )
-  }
-  save(results, file = paste0('results/PR-1TF45_', area_, '.RData'))
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = -1,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf),
+  n = 4400,
+  condition = 'PR-1EP30RE015'
+)
 
-}
+# selection: PR (acceleration parameter = 0); fixed length (45) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = -1,
+  threshold = 45,
+  rmax = .3,
+  stop = list(fixed = 45),
+  n = 4800,
+  condition = 'PR0TF45'
+)
+
+# selection: PR (acceleration parameter = 0); fixed length (20) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = -1,
+  threshold = 20,
+  rmax = .3,
+  stop = list(fixed = 20),
+  n = 5200,
+  condition = 'PR0TF20'
+)
+
+# selection: PR (acceleration parameter = 0); standard error (0.3) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = -1,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60),
+  n = 5600,
+  condition = 'PR0EP30'
+)
+
+# selection: PR (acceleration parameter = 0); standard error (.3)/error reduction (.015) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = -1,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf),
+  n = 6000,
+  condition = 'PR0EP30RE015'
+)
 
 
+# selection: PR (acceleration parameter = 1); fixed length (45) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = 1,
+  threshold = 45,
+  rmax = .3,
+  stop = list(fixed = 45),
+  n = 3200,
+  condition = 'PR1TF45'
+)
+
+# selection: PR (acceleration parameter = 1); fixed length (20) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = 1,
+  threshold = 20,
+  rmax = .3,
+  stop = list(fixed = 20),
+  n = 3600,
+  condition = 'PR1TF20'
+)
+
+# selection: PR (acceleration parameter = 1); standard error (0.3) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = 1,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60),
+  n = 4000,
+  condition = 'PR1EP30'
+)
+
+# selection: PR (acceleration parameter = 1); standard error (.3)/error reduction (.015) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = 1,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf),
+  n = 4400,
+  condition = 'PR1EP30RE015'
+)
+
+
+# selection: PR (acceleration parameter = 2); fixed length (45) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = 2,
+  threshold = 45,
+  rmax = .3,
+  stop = list(fixed = 45),
+  n = 3200,
+  condition = 'PR2TF45'
+)
+
+# selection: PR (acceleration parameter = 2); fixed length (20) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'fixed',
+  acceleration = 2,
+  threshold = 20,
+  rmax = .3,
+  stop = list(fixed = 20),
+  n = 3600,
+  condition = 'PR2TF20'
+)
+
+# selection: PR (acceleration parameter = 2); standard error (0.3) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = 2,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60),
+  n = 4000,
+  condition = 'PR2EP30'
+)
+
+# selection: PR (acceleration parameter = 2); standard error (.3)/error reduction (.015) ----
+
+fct_simulation(
+  sel.method = 'progressive',
+  cat.type = 'variable',
+  acceleration = 2,
+  threshold = .3,
+  rmax = .3,
+  stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf),
+  n = 4400,
+  condition = 'PR2EP30RE015'
+)
 
