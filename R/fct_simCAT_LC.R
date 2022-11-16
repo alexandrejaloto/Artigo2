@@ -1,19 +1,12 @@
-# # resps2 <- resps
+# resps2 <- resps
 # resps <- resps2
-#
+
 # resps = resps[[rep]]
 # bank = items[,1:3]
-# start.theta = start.theta
-# sel.method = sel.method
-# cat.type = cat.type
-# acceleration = acceleration
-# threshold = threshold
-# rmax = rmax
 # content.names = 1:30
 # content.props = rep(1/30, 30)
 # content.items = items$CO_HABILIDADE
 # met.content = "MCCAT"
-# stop = stop
 # item.language = items$TP_LINGUA
 
 
@@ -31,6 +24,7 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
     item.language,
     content.items
   )
+
   rownames(bank) <- paste0("I", 1:nrow(bank))
   if (!is.null(stop$max.items))
     max.items <- stop$max.items
@@ -43,6 +37,7 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
   bar <- txtProgressBar(min = 0, max = nrow(resps), char = "|",
                         style = 3)
 
+  # person <- 1
   for (person in 1:nrow(resps)) {
     # person <- 1
 
@@ -61,14 +56,17 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
     # pars$TP_LINGUA
     # if English
     if(language[person] == 0)
-      bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 1))
-
+      {
+      available_language <- number_items_available[(is.na(bank_available$item.language) | bank_available$item.language != 1)]
+    bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 1))
+    }
     # if Spanish
     if(language[person] == 1)
-      bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 0))
+    {
+      available_language <- number_items_available[(is.na(bank_available$item.language) | bank_available$item.language != 0)]
+      bank_available <- bank_available[available_language,]
+    }
 
-
-    rownames(bank_available)
     end <- list(stop = FALSE)
     administered <- NULL
     theta.cat <- theta.hist <- start.theta
@@ -82,9 +80,12 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
                                  content.props = content.props, content.items = bank_available$content.items,
                                  met.content = met.content)
       administered <- c(administered, item_select$item)
-      theta <- eap(pattern = resps[, number_items_available][person,
-                                                             administered], bank = bank_available[administered,
-                                                             ])
+
+      theta <- eap(
+        pattern = resps[, available_language][person, administered],
+        bank = bank_available[administered, ]
+      )
+
       table(content.items[administered])
       table(content.items[number_items_available])
 

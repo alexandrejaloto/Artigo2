@@ -1,11 +1,14 @@
-# sel.method = 'random'
+# # resps2 <- resps
+# resps <- resps2
+#
+# sel.method = 'MFI'
 # cat.type = 'fixed'
 # acceleration = 1
-# threshold = 45
+# threshold = 20
 # rmax = 1
-# stop = list(fixed = 45)
-# n = 0
-# condition = 'ALETF45'
+# stop = list(fixed = 20)
+# n = 2000
+# condition = 'MIFTF20'
 
 fct_simulation_LC <- function(sel.method, cat.type, acceleration, threshold, rmax, stop, n, condition)
 {
@@ -21,6 +24,7 @@ fct_simulation_LC <- function(sel.method, cat.type, acceleration, threshold, rma
 
   results <- list()
 
+  rep <- 1
   for (rep in 1:replications)
   {
     # rep <- 1

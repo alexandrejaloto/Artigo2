@@ -1,11 +1,11 @@
-# sel.method = 'random'
-# cat.type = 'fixed'
+# sel.method = 'MFI'
+# cat.type = 'variable'
 # acceleration = 1
-# threshold = 45
+# threshold = .3
 # rmax = 1
-# stop = list(fixed = 45)
-# n = 0
-# condition = 'ALETF45'
+# stop = list(se = .3, min.items = 15, max.items = 60)
+# n = 2400
+# condition = 'MIFEP30'
 
 fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, stop, n, condition)
 {
@@ -13,7 +13,7 @@ fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, 
   for (area_ in areas)
   {
 
-    # area_ <- 'CH'
+    # area_ <- 'MT'
     load(paste0('rdata/resps_', area_, '.RData'))
 
     start.theta <- (m.scores[[area_]] - official.constants[[area_]]$m)/official.constants[[area_]]$s
