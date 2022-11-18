@@ -1,6 +1,6 @@
-# resps2 <- resps
+# # resps2 <- resps
 # resps <- resps2
-
+#
 # resps = resps[[rep]]
 # bank = items[,1:3]
 # content.names = 1:30
@@ -24,7 +24,7 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
     item.language,
     content.items
   )
-
+  bank$content.items
   rownames(bank) <- paste0("I", 1:nrow(bank))
   if (!is.null(stop$max.items))
     max.items <- stop$max.items
@@ -37,9 +37,10 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
   bar <- txtProgressBar(min = 0, max = nrow(resps), char = "|",
                         style = 3)
 
-  # person <- 1
+  # person <- 3
   for (person in 1:nrow(resps)) {
     # person <- 1
+    # print(paste0('person ', person))
 
     # exclude items with high exposure rate
     if (person == 1) {
@@ -47,31 +48,42 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
       bank_available <- bank
     } else {
       exposure <- simCAT:::exposure.rate(prev.resps, rownames(bank))
-      number_items_available <- which(exposure$Freq <=
-                                        rmax)
-      bank_available <- bank[number_items_available,
-      ]
+      number_items_available <- which(exposure$Freq <= rmax)
+      bank_available <- bank[number_items_available, ]
     }
 
-    # pars$TP_LINGUA
+    # number_items_available is now from in bank_available
+    number_items_available <- 1:nrow(bank_available)
+
+    rownames(bank_available)
+    bank_available$content.items
+
+
     # if English
     if(language[person] == 0)
-      {
+    {
       available_language <- number_items_available[(is.na(bank_available$item.language) | bank_available$item.language != 1)]
-    bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 1))
+      # bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 1))
+      bank_available <- bank_available[available_language,]
     }
     # if Spanish
     if(language[person] == 1)
     {
+
       available_language <- number_items_available[(is.na(bank_available$item.language) | bank_available$item.language != 0)]
+
+      # bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 0))
       bank_available <- bank_available[available_language,]
     }
+
+    # bank_available[available_language,]$content.items
 
     end <- list(stop = FALSE)
     administered <- NULL
     theta.cat <- theta.hist <- start.theta
     SE <- se.hist <- 1
     while (!end$stop) {
+
       item_select <- select.item(bank = bank_available,
                                  theta = theta.cat, administered = administered,
                                  sel.method = sel.method, cat.type = cat.type,

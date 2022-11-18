@@ -1,14 +1,14 @@
 # # resps2 <- resps
-# resps <- resps2
+# # resps <- resps2
 #
-# sel.method = 'MFI'
+# sel.method = 'progressive'
 # cat.type = 'fixed'
-# acceleration = 1
-# threshold = 20
-# rmax = 1
-# stop = list(fixed = 20)
-# n = 2000
-# condition = 'MIFTF20'
+# acceleration = -1
+# threshold = 45
+# rmax = .3
+# stop = list(fixed = 45)
+# n = 3200
+# condition = 'PR-1TF45'
 
 fct_simulation_LC <- function(sel.method, cat.type, acceleration, threshold, rmax, stop, n, condition)
 {
