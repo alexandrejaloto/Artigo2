@@ -10,7 +10,7 @@ pars <- data.frame()
 
 areas <- c('CH', 'CN', 'LC', 'MT')
 # area <- 'CH'
-# year <- 2009
+# year <- 2020
 # application <- 1
 for (area in areas)
 {
@@ -32,7 +32,7 @@ for (area in areas)
           # filter first testlet
           subset(CO_PROVA == testlets[[paste0('year.', year, '.', application)]][[area]][1]) %>%
           # select parameters and content
-          select(starts_with('NU_PAR'), CO_HABILIDADE) %>%
+          select(starts_with('NU_PAR'), CO_HABILIDADE, CO_ITEM) %>%
           # exclude items without parameters
           drop_na()
 
@@ -46,7 +46,7 @@ for (area in areas)
         # filter first testlet
         subset(CO_PROVA == testlets[[paste0('year.', year, '.', application)]][[area]][1]) %>%
         # select parameters and content
-        select(starts_with('NU_PAR'), CO_HABILIDADE, TP_LINGUA) %>%
+        select(starts_with('NU_PAR'), CO_HABILIDADE, TP_LINGUA, CO_ITEM) %>%
         # exclude items without parameters
         drop_na(starts_with('NU_PAR'), CO_HABILIDADE)
 
@@ -71,7 +71,7 @@ for (area in areas)
           # filter first testlet
           subset(CO_PROVA == testlets[[paste0('year.', year, '.', application)]][[area]][1]) %>%
           # select parameters and content
-          select(starts_with('NU_PAR'), CO_HABILIDADE, TP_LINGUA) %>%
+          select(starts_with('NU_PAR'), CO_HABILIDADE, TP_LINGUA, CO_ITEM) %>%
           # exclude items without parameters
           drop_na(starts_with('NU_PAR'), CO_HABILIDADE)
 
@@ -88,6 +88,11 @@ for (area in areas)
   }
 }
 
+# a <- subset(pars, CO_ITEM %in% pars$CO_ITEM[duplicated(pars$CO_ITEM)]) %>%
+#   arrange(CO_ITEM)
+
+pars <- pars[!duplicated(pars$CO_ITEM),]
+
 table(pars$area)
 
 save(pars, file = 'rdata/pars.RData')
@@ -102,7 +107,7 @@ pars
 
 areas <- c('CH', 'CN', 'LC', 'MT')
 
-subset (pars, year != 2011) %>%
+pars %>%
   group_by(area) %>%
   summarise(
     mean.a = mean(NU_PARAM_A),
@@ -119,3 +124,4 @@ subset (pars, year != 2011) %>%
     sep = ';',
     dec = ','
   )
+

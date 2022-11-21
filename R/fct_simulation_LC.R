@@ -2,13 +2,13 @@
 # # resps <- resps2
 #
 # sel.method = 'progressive'
-# cat.type = 'fixed'
-# acceleration = -1
-# threshold = 45
+# cat.type = 'variable'
+# acceleration = 2
+# threshold = .3
 # rmax = .3
-# stop = list(fixed = 45)
-# n = 3200
-# condition = 'PR-1TF45'
+# stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf)
+# n = 4400
+# condition = 'PR2EP30RE015'
 
 fct_simulation_LC <- function(sel.method, cat.type, acceleration, threshold, rmax, stop, n, condition)
 {
@@ -16,7 +16,7 @@ fct_simulation_LC <- function(sel.method, cat.type, acceleration, threshold, rma
 
   load(paste0('rdata/resps_', area_, '.RData'))
 
-  # resps[[1]] <- resps[[1]][1:10,]
+  # resps[[1]] <- resps[[1]][1:100,]
 
   start.theta <- (m.scores[[area_]] - official.constants[[area_]]$m)/official.constants[[area_]]$s
 

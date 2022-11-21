@@ -3,6 +3,8 @@ library (dplyr)
 # detach('package:simCAT')
 # devtools::install_github('alexandrejaloto/simCAT', force = TRUE)
 
+# prepare ----
+
 rm(list = ls())
 
 areas <- c('CH', 'CN', 'LC', 'MT')
@@ -88,14 +90,22 @@ stop <- c(
   'EP30RE015'
 )
 
+# table results ----
+
 table_results <- data.frame()
+table_conditional_rmse <- list()
+table_conditional_se <- list()
 
 for (area_ in areas)
+{
+  table_conditional_rmse[[area_]] <- data.frame()
+  table_conditional_se[[area_]] <- data.frame()
+
   for (i in 1:length(conditions))
     # for (i in 10:length(conditions))
   {
-    area_ <- 'LC'
-    i <- 5
+    # area_ <- 'MT'
+    # i <- 24
 
     # load results
     load(paste0('results/', conditions[i], '_', area_, '.RData'))
@@ -108,12 +118,13 @@ for (area_ in areas)
 
     real[[area_]] <- (real[[area_]] - official.constants[[area_]]$m)/official.constants[[area_]]$s
 
+    real[[area_]] <- real[[area_]][1:100]
+
     # load pars
     load('rdata/pars.RData')
 
     # select items
     items <- subset (pars, area == area_) %>%
-      subset (year != 2011) %>%
       nrow()
 
     # item names
@@ -150,23 +161,138 @@ for (area_ in areas)
         overlap = analysis$evaluation['overlap']
       )
     )
-  }
 
+    # conditional rmse
+    table_conditional_rmse[[area_]] <- rbind(
+      table_conditional_rmse[[area_]],
+      analysis$conditional[1,]
+    )
+
+    # conditional se
+    table_conditional_se[[area_]] <- rbind(
+      table_conditional_se[[area_]],
+      analysis$conditional[2,]
+    )
+
+  }
+}
 rownames(table_results) <- 1:nrow(table_results)
 
+
+# write.table(
+#   table_results,
+#   'results/table_results.csv',
+#   row.names = FALSE,
+#   sep = ';',
+#   dec = ','
+# )
+
+# conditional ----
+
+deciles <- list()
+
+for(area_ in areas)
+  deciles[[area_]] <- as.numeric(colnames(table_conditional_rmse[[area_]]))
+
+save(deciles, file = 'rdata/deciles.RData')
+
+for(area_ in areas)
+{
+  rownames(table_conditional_rmse[[area_]]) <- conditions
+  rownames(table_conditional_se[[area_]]) <- conditions
+
+  names(table_conditional_se[[area_]]) <- paste0('decil', 1:10)
+  names(table_conditional_rmse[[area_]]) <- paste0('decil', 1:10)
+
+  write.table(
+    table_conditional_rmse[[area_]],
+    paste0('results/table_conditional_rmse_', area_, '.csv'),
+    row.names = TRUE,
+    sep = ';',
+    dec = ','
+  )
+
+  write.table(
+    table_conditional_se[[area_]],
+    paste0('results/table_conditional_se_', area_, '.csv'),
+    row.names = TRUE,
+    sep = ';',
+    dec = ','
+  )
+}
+
+# exposure rates ----
+
+exp <- list()
+
+for(area_ in areas)
+{
+
+  # area_ <- 'CH'
+
+  # load pars
+  load('rdata/pars.RData')
+
+  # select items
+  items <- subset (pars, area == area_) %>%
+    nrow()
+
+  # item names
+  items <- paste0('I', 1:items)
+  exp[[area_]] <- data.frame(
+    matrix(nrow = 10)
+  )
+  for (i in 1:24)
+  {
+    # i <- 1
+
+    # load results
+    load(paste0('results/', conditions[i], '_', area_, '.RData'))
+
+    exposure <- simCAT:::exposure.rate(results[[1]]$prev.resps, items)
+
+    exp. <- cut(
+      exposure$Freq,
+      c(-Inf, 0, .02, .05, .1, .15, .2, .25, .3, .4, 1)
+    )
+    exp. <- recode(exp., '(-Inf,0]' = '0')
+
+    exp. <- data.frame(prop.table(table(exp.)))
+
+    # names(exp.) <- c('exp', conditions[i])
+
+    exp[[area_]] <- cbind(exp[[area_]], exp.[,2])
+  }
+
+  names(exp[[area_]]) <- c('exp', conditions)
+  exp[[area_]]$exp <- exp.$exp.
+
+}
+
+exp
+
+exp <- do.call(rbind, exp)
+
+exp$area <- substr(rownames(exp), 1, 2)
+
+exp <- select(exp, area, everything())
+
 write.table(
-  table_results,
-  'results/table_results.csv',
+  exp,
+  'results/table_exp.csv',
   row.names = FALSE,
-  sep = ';',
-  dec = ','
+  dec = ',',
+  sep = ';'
 )
+
+# end
+
+# rascunho ----
 
 results[[1]]$prev.resps[[1]]
 
 
-items <- subset (pars, area == area_) %>%
-  subset (year != 2011)
+items <- subset (pars, area == area_)
 
 items$CO_HABILIDADE
 f <- function(x)

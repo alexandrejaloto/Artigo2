@@ -1,11 +1,11 @@
-# sel.method = 'MFI'
+# sel.method = 'progressive'
 # cat.type = 'variable'
-# acceleration = 1
+# acceleration = 2
 # threshold = .3
-# rmax = 1
-# stop = list(se = .3, min.items = 15, max.items = 60)
-# n = 2400
-# condition = 'MIFEP30'
+# rmax = .3
+# stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf)
+# n = 4400
+# condition = 'PR2EP30RE015'
 
 fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, stop, n, condition)
 {

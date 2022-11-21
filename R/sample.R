@@ -18,7 +18,6 @@ data <- fread (
 )
 
 scores <- list()
-# areas <- c ('CH', 'CN', 'LC', 'MT')
 areas <- c ('CH', 'CN', 'MT')
 
 # filter who did not left all answers blank
@@ -62,21 +61,13 @@ data.lc <- select(data, NU_NOTA_LC, TP_LINGUA) %>%
   subset (NU_NOTA_LC > 0) %>%
   data.frame()
 
-scores[['LC']] <- data.lc$NU_NOTA_LC
-names (scores[[area_]]) <- 'scores'
+scores[['LC']] <- data.lc['NU_NOTA_LC']
 
-# draw simple random sample from Enem 2020
-# sample error = 5
-alpha <- .05
-real <- list()
+names (scores[[area_]]) <- 'scores'
 
 # variance
 S <- var(data.lc$NU_NOTA_LC)
 sd <- sd (data.lc$NU_NOTA_LC)
-
-Z <- qnorm(1-(alpha/2))
-
-error <- 5
 
 n <- ceiling ((sd*Z/error)^2)
 
@@ -86,14 +77,8 @@ sample.lc <- sample(nrow(data.lc), n)
 language <- data.lc$TP_LINGUA[sample.lc]
 real[[area_]] <- data.lc$NU_NOTA_LC[sample.lc]
 
-real2 <- real
-language2 <- language
-
-load('rdata/samples.RData')
-load('rdata/language.RData')
-
-all.equal(real2$LC, real$LC)
-all.equal(language, language2)
+save(real, file = 'rdata/samples.RData')
+save(language, file = 'rdata/language.RData')
 
 lapply (real, length)
 lapply (scores, nrow)
@@ -112,8 +97,33 @@ lapply (real, sd.)
 lapply (real, summary)
 lapply (scores, summary)
 
-save(real, file = 'rdata/samples.RData')
-save(language, file = 'rdata/language.RData')
+description <- data.frame()
+for(area_ in c('CH', 'CN', 'LC', 'MT'))
+description <- rbind(
+  description,
+  data.frame(
+  area = area_,
+  samp_n = length(real[[area_]]),
+  samp_m = mean(real[[area_]]),
+  samp_sd = sd(real[[area_]]),
+  samp_min = min(real[[area_]]),
+  samp_max = max(real[[area_]]),
+  pop_n = nrow(scores[[area_]]),
+  pop_m = mean(scores[[area_]]$scores),
+  pop_sd = sd(scores[[area_]]$scores),
+  pop_min = min(scores[[area_]]$scores),
+  pop_max = max(scores[[area_]]$scores)
+  )
+)
+description
+
+write.table(
+  description,
+  'results/sample_description.csv',
+  dec = ',',
+  sep = ';',
+  row.names = FALSE
+)
 
 m.scores <- lapply(scores, function(x) mean(pull(select(x, scores))))
 save(m.scores, file = 'rdata/mean.RData')

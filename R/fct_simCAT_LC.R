@@ -52,7 +52,7 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
       bank_available <- bank[number_items_available, ]
     }
 
-    # number_items_available is now from in bank_available
+    # number_items_available is now from bank_available
     number_items_available <- 1:nrow(bank_available)
 
     rownames(bank_available)
@@ -63,20 +63,14 @@ simCAT_LC <- function (resps, bank, start.theta = 0, sel.method = "MFI",
     if(language[person] == 0)
     {
       available_language <- number_items_available[(is.na(bank_available$item.language) | bank_available$item.language != 1)]
-      # bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 1))
       bank_available <- bank_available[available_language,]
     }
     # if Spanish
     if(language[person] == 1)
     {
-
       available_language <- number_items_available[(is.na(bank_available$item.language) | bank_available$item.language != 0)]
-
-      # bank_available <- subset(bank_available, (is.na(bank_available$item.language) | bank_available$item.language != 0))
       bank_available <- bank_available[available_language,]
     }
-
-    # bank_available[available_language,]$content.items
 
     end <- list(stop = FALSE)
     administered <- NULL

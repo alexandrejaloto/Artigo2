@@ -7,8 +7,6 @@ gc()
 # load parameters
 load('rdata/pars.RData')
 
-pars <- subset (pars, year != 2011)
-
 # load thetas (samples)
 load('rdata/samples.RData')
 

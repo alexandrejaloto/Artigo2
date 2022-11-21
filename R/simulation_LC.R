@@ -9,7 +9,6 @@ rm(list = ls())
 
 # load parameters
 load('rdata/pars.RData')
-pars <- subset (pars, year != 2011)
 
 # load Enem mean
 load('rdata/mean.RData')
