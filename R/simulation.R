@@ -2,7 +2,7 @@
 # devtools::install_github('alexandrejaloto/simCAT')
 library (simCAT)
 library (dplyr)
-
+select.item()
 rm(list = ls())
 
 # prepare simulation ----
@@ -187,7 +187,7 @@ fct_simulation(
 fct_simulation(
   sel.method = 'progressive',
   cat.type = 'fixed',
-  acceleration = -1,
+  acceleration = 0,
   threshold = 45,
   rmax = .3,
   stop = list(fixed = 45),
@@ -200,7 +200,7 @@ fct_simulation(
 fct_simulation(
   sel.method = 'progressive',
   cat.type = 'fixed',
-  acceleration = -1,
+  acceleration = 0,
   threshold = 20,
   rmax = .3,
   stop = list(fixed = 20),
@@ -213,7 +213,7 @@ fct_simulation(
 fct_simulation(
   sel.method = 'progressive',
   cat.type = 'variable',
-  acceleration = -1,
+  acceleration = 0,
   threshold = .3,
   rmax = .3,
   stop = list(se = .3, min.items = 15, max.items = 60),
@@ -226,7 +226,7 @@ fct_simulation(
 fct_simulation(
   sel.method = 'progressive',
   cat.type = 'variable',
-  acceleration = -1,
+  acceleration = 0,
   threshold = .3,
   rmax = .3,
   stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf),

@@ -7,7 +7,17 @@ rm(list = ls())
 
 areas <- c('CH', 'CN', 'LC', 'MT')
 
+# load deciles
 load('rdata/deciles.RData')
+
+# load parameters
+load('rdata/pars.RData')
+
+# load constants
+load('rdata/official_constants.RData')
+
+# load samples
+load('rdata/samples.RData')
 
 stop <- c('Tamanho fixo (45)', 'Tamanho fixo (20)', 'Erro padrão (0,30)', 'Erro padrão (0,30) ou Redução do erro (0,015)')
 stop <- c('TF45', 'TF20', 'EP30', 'EP30RE015')
@@ -80,7 +90,7 @@ p
 
 dev.off()
 
-## SE ----
+# SE ----
 
 table_conditional_se <- data.frame()
 
@@ -146,6 +156,63 @@ jpeg (
 p
 
 dev.off()
+
+# density and information ----
+
+thetas.sample <- list()
+for(area_ in areas)
+{
+  thetas.sample[[area_]] <- (real[[area_]] - official.constants[[area_]]$m)/official.constants[[area_]]$s
+
+  thetas.sample[[area_]] <- data.frame(thetas.sample[[area_]]) %>%
+    mutate(area = area_) %>%
+    rename(theta = thetas.sample..area_..)
+}
+
+thetas.sample <- do.call(rbind, thetas.sample)
+
+max.theta <- max(thetas.sample$theta)
+
+thetas <- seq (-3, max(max.theta), .01)
+
+info.graphic <- list()
+
+for (area_ in areas)
+{
+  items <- subset (pars, area == area_)
+  info.graphic[[area_]] <- lapply(thetas, function(x) sum(calc.info(items, x))) %>%
+    do.call(rbind, .) %>%
+    data.frame()
+  info.graphic[[area_]]$area <- area_
+}
+
+info.graphic <- do.call(rbind, info.graphic)
+names(info.graphic)[1] <- 'info'
+info.graphic$thetas.info <- thetas
+
+jpeg (
+  filename = paste0 ('graphics/density_information.jpg'),
+  width = 3200,
+  height = 3200,
+  units = "px",
+  pointsize = 12,
+  quality = 200,
+  bg = "white",
+  res = 300,
+  restoreConsole = TRUE
+)
+
+ggplot() +
+  geom_density(data = thetas.sample, aes_string(thetas.sample$theta)) +
+  geom_line(data = info.graphic, aes(x = thetas.info, y = info/(max(info)/.5)), linetype = 2) +
+  scale_y_continuous(sec.axis = sec_axis(~./(max(info.graphic$info)/.5), name = 'informação')) +
+  labs(x= "theta", y = "densidade") +
+  facet_grid(rows = vars(area)) +
+  theme_bw()
+
+dev.off()
+
+# end
 
 # rascunho ----
 

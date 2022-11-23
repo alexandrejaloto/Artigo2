@@ -1,11 +1,11 @@
 # sel.method = 'progressive'
 # cat.type = 'variable'
-# acceleration = 2
+# acceleration = -1
 # threshold = .3
 # rmax = .3
-# stop = list(se = .3, min.items = 15, max.items = 60, hypo = .015, hyper = Inf)
-# n = 4400
-# condition = 'PR2EP30RE015'
+# stop = list(se = .3, min.items = 15, max.items = 60)
+# n = 5600
+# condition = 'PR0EP30'
 
 fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, stop, n, condition)
 {
@@ -13,7 +13,7 @@ fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, 
   for (area_ in areas)
   {
 
-    # area_ <- 'MT'
+    # area_ <- 'CN'
     load(paste0('rdata/resps_', area_, '.RData'))
 
     start.theta <- (m.scores[[area_]] - official.constants[[area_]]$m)/official.constants[[area_]]$s
@@ -31,7 +31,7 @@ fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, 
       set.seed(rep+n, sample.kind = "Rounding")
 
       results[[rep]] <- simCAT::simCAT(
-        resps = resps[[rep]],
+        resps = resps[[rep]][1:20,],
         bank = items[,1:3],
         start.theta = start.theta,
         sel.method = sel.method,
