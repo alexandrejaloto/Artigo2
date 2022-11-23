@@ -11,7 +11,7 @@
 
 simCAT_LC <- function(resps, bank, start.theta = 0, sel.method = 'MFI',
                       cat.type = 'variable', acceleration = 1,
-                      threshold = .30, rmax = 1,
+                      met.weight = 'mcclarty', threshold = .30, rmax = 1,
                       content.names = NULL, content.props = NULL,
                       content.items = NULL, met.content = 'MCCAT',
                       stop = list(se = .3, hypo = .015, hyper = Inf))

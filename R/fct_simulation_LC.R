@@ -37,6 +37,7 @@ fct_simulation_LC <- function(sel.method, cat.type, acceleration, threshold, rma
       sel.method = sel.method,
       cat.type = cat.type,
       acceleration = acceleration,
+      met.weight = 'mcclarty',
       threshold = threshold,
       rmax = rmax,
       content.names = 1:30,

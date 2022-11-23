@@ -31,12 +31,13 @@ fct_simulation <- function(sel.method, cat.type, acceleration, threshold, rmax, 
       set.seed(rep+n, sample.kind = "Rounding")
 
       results[[rep]] <- simCAT::simCAT(
-        resps = resps[[rep]][1:20,],
+        resps = resps[[rep]],
         bank = items[,1:3],
         start.theta = start.theta,
         sel.method = sel.method,
         cat.type = cat.type,
         acceleration = acceleration,
+        met.weight = 'mcclarty',
         threshold = threshold,
         rmax = rmax,
         content.names = 1:30,
